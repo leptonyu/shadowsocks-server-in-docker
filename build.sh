@@ -28,7 +28,7 @@ if [ -z "$FROM" ]; then
 fi
 
 NAME=`basename "$ROOT"`
-LABEL=icymint/$NAME
+LABEL=icymint/$NAME:`date +%Y%m%d`
 TEMP_LABEL=$LABEL-builder
 FILE="$ROOT/Dockerfile"
 PACK=true
@@ -52,7 +52,6 @@ ARG PACK=true
 
 COPY upx /bin/upx
 COPY make.sh make.sh
-COPY conf.json conf.json
 
 RUN chmod +x make.sh \
  && ./make.sh \
@@ -62,11 +61,10 @@ RUN chmod +x make.sh \
       && upx --lzma --best main \
   ; fi \
  && echo "FROM scratch"            > Dockerfile \
- && echo "COPY conf.json  /conf.json"       >> Dockerfile \
  && echo "COPY main  /main"       >> Dockerfile \
- && echo "ENTRYPOINT [\"/main\",\"-c\",\"/conf.json\"]" >> Dockerfile
+ && echo "ENTRYPOINT [\"/main\"]" >> Dockerfile
 
-CMD tar -cf - conf.json main Dockerfile
+CMD tar -cf - main Dockerfile
 EOF
 
 cat "$FILE"
